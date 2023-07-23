@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="main.css" />
+  </head>
+  <body class="bg-gray-800">
+    <div class="h-screen flex items-center justify-center">
+      <div class="max-w-md w-full bg-white rounded-lg shadow-lg">
+        <div class="bg-gray-800 px-4 py-3 rounded-t-lg">
+          <h1 class="text-xl font-bold text-white">Chat Interface</h1>
+        </div>
+        <div
+          id="chat"
+          class="overflow-y-auto max-h-96 px-4 py-2 text-white bg-gray-900"
+        ></div>
+        <div class="bg-gray-800 px-4 py-2 rounded-b-lg">
+          <input
+            id="messageInput"
+            type="text"
+            placeholder="Type your message here..."
+            class="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-900 text-white"
+          />
+          <button
+            id="sendMessage"
+            class="w-full mt-2 px-3 py-2 rounded-md bg-gray-600 text-white font-semibold"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const chatContainer = document.getElementById("chat");
+      const messageInput = document.getElementById("messageInput");
+      const sendMessageBtn = document.getElementById("sendMessage");
+
+      // Helper function to add a message to the chat container
+      function addMessage(message, sender) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `p-2 ${sender === "user" ? "text-right" : ""}`;
+        messageDiv.innerHTML = `<span class="text-gray-600">${
+          sender === "user" ? "You" : "Bot"
+        }:</span> ${message}`;
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      // Function to send user message to the API and get bot response
+      async function sendUserMessage(userMessage) {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/greet", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ input_string: userMessage }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const data = await response.json();
+          return data.message;
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          return "Oops! Something went wrong.";
+        }
+      }
+
+      // Event listener for send button click
+      sendMessageBtn.addEventListener("click", async () => {
+        const userMessage = messageInput.value.trim();
+        if (userMessage) {
+          addMessage(userMessage, "user");
+          messageInput.value = "";
+
+          const botResponse = await sendUserMessage(userMessage);
+          addMessage(botResponse, "bot");
+        }
+      });
+
+      // Initial bot greeting
+      addMessage("Hello! Type a message below to chat with the bot.", "bot");
+    </script>
+  </body>
+</html>

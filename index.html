@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>annyang.js Example</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 50px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      #startBtn {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      #transcription {
+        margin-top: 20px;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>annyang.js Example</h1>
+    <p>Click the microphone button and try saying "hello".</p>
+    <button id="startBtn">Start</button>
+    <div id="transcription"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+    <script>
+      const transcriptionDiv = document.getElementById("transcription");
+
+      if (annyang) {
+        const commands = {
+          hello: function () {
+            transcriptionDiv.innerText = "Hello!";
+          },
+        };
+
+        annyang.addCommands(commands);
+
+        annyang.start({ autoRestart: true, continuous: false });
+        annyang.debug();
+      } else {
+        transcriptionDiv.innerText =
+          "Voice commands are not supported in this browser.";
+      }
+    </script>
+  </body>
+</html>
